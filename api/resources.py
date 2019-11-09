@@ -1,27 +1,38 @@
 import re
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, inputs
 from models import UserModel, RevokedTokenModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 
-user_parser = reqparse.RequestParser()
-user_parser.add_argument('email', help = 'This field cannot be blank', required = True)
-user_parser.add_argument('password', help = 'This field cannot be blank', required = True)
+login_parser = reqparse.RequestParser()
+login_parser.add_argument('email', help = 'Email is required', required = True)
+login_parser.add_argument('password', help = 'Password is required', required = True)
 
-email_regex = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
+registration_parser = reqparse.RequestParser()
+registration_parser.add_argument('email', help = 'Email is required', required = True, type=inputs.regex("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"))
+registration_parser.add_argument('password', help = 'Password is required', required = True)
+registration_parser.add_argument('first_name', help = 'First name is required', required = True)
+registration_parser.add_argument('last_name', help = 'Last name is required', required = True)
+registration_parser.add_argument('phone', help = 'Phone is required', required = True)
+registration_parser.add_argument('dob', help = 'Date of birth is required', required = True)
+registration_parser.add_argument('dod', help = 'Date of diagnosis is required', required = True)
+registration_parser.add_argument('gender', help = 'Gender is required', required = True)
 
 class UserRegistration(Resource):
     def post(self):
-        data = user_parser.parse_args()
+        data = registration_parser.parse_args()
         
         if UserModel.find_by_email(data['email']):
             return {'message': 'User {} already exists'.format(data['email'])}
-
-        if not re.match(email_regex, data['email']):
-            return {'message': 'invalid email'}, 500
         
         new_user = UserModel(
             email = data['email'],
-            password = UserModel.generate_hash(data['password'])
+            password = UserModel.generate_hash(data['password']),
+            first_name = data['first_name'],
+            last_name = data['last_name'],
+            phone = data['phone'],
+            gender = data['gender'],
+            dob = data['dob'],
+            dod = data['dod']
         )
         
         try:
@@ -39,9 +50,7 @@ class UserRegistration(Resource):
 
 class UserLogin(Resource):
     def put(self):
-        data = user_parser.parse_args()
-        if not re.match(email_regex, data['email']):
-            return {'message': 'invalid email'}, 500
+        data = login_parser.parse_args()
         current_user = UserModel.find_by_email(data['email'])
 
         if not current_user:

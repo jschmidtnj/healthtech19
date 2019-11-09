@@ -7,6 +7,12 @@ class UserModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    first_name = db.Column(db.String(120), nullable=False)
+    last_name = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(120), nullable=False)
+    gender = db.Column(db.String(15), nullable=False)
+    dob = db.Column(db.String(15), nullable=False)
+    dod = db.Column(db.String(15), nullable=False)
     password = db.Column(db.String(120), nullable=False)
 
     def save_to_db(self):
@@ -20,6 +26,12 @@ class UserModel(db.Model):
     def to_json(x):
         return {
             'email': x.email,
+            'first_name': x.first_name,
+            'last_name': x.last_name,
+            'phone': x.phone,
+            'gender': x.gender,
+            'dob': x.dob,
+            'dod': x.dod,
             'password': x.password
         }
 
