@@ -19,7 +19,7 @@ export const getters = {
 export const mutations = {
   setToken(state, payload) {
     state.token = payload
-    this.$axios.setToken(state.token)
+    this.$axios.setToken(state.token, 'Bearer')
   },
   setUser(state, payload) {
     state.user = payload
@@ -64,8 +64,8 @@ export const actions = {
         .then(res => {
           if (res.status === 200) {
             if (res.data) {
-              if (res.data.token) {
-                resolve(res.data.token)
+              if (res.data.access_token) {
+                resolve(res.data.access_token)
               } else {
                 reject(new Error('could not find token data'))
               }
@@ -91,26 +91,14 @@ export const actions = {
         reject(new Error('no token found for user'))
       } else {
         this.$axios
-          .get('/graphql', {
-            params: {
-              query: '{account{id email type emailverified}}'
-            }
+          .get('/user', {
+            params: {}
           })
           .then(res => {
             if (res.status === 200) {
               if (res.data) {
-                if (res.data.data && res.data.data.account) {
-                  commit('setUser', res.data.data.account)
-                  resolve('found user account data')
-                } else if (res.data.errors) {
-                  reject(
-                    new Error(
-                      `found errors: ${JSON.stringify(res.data.errors)}`
-                    )
-                  )
-                } else {
-                  reject(new Error('could not find data or errors'))
-                }
+                commit('setUser', res.data)
+                resolve('found user account data')
               } else {
                 reject(new Error('could not get data'))
               }

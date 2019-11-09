@@ -38,14 +38,14 @@ class UserRegistration(Resource):
 
 
 class UserLogin(Resource):
-    def post(self):
+    def put(self):
         data = user_parser.parse_args()
         if not re.match(email_regex, data['email']):
             return {'message': 'invalid email'}, 500
         current_user = UserModel.find_by_email(data['email'])
 
         if not current_user:
-            return {'message': 'User {} doesn\'t exist'.format(data['email'])}
+            return {'message': 'invalid email or password'}, 400
         
         if UserModel.verify_hash(data['password'], current_user.password):
             access_token = create_access_token(identity = data['email'])
@@ -56,7 +56,7 @@ class UserLogin(Resource):
                 'refresh_token': refresh_token
                 }
         else:
-            return {'message': 'Wrong credentials'}
+            return {'message': 'invalid email or password'}, 400
 
 
 class UserLogoutAccess(Resource):
@@ -90,18 +90,20 @@ class TokenRefresh(Resource):
         access_token = create_access_token(identity = current_user)
         return {'access_token': access_token}
 
-
-class AllUsers(Resource):
-    def get(self):
-        return UserModel.return_all()
-    
-    def delete(self):
-        return UserModel.delete_all()
-
-
-class SecretResource(Resource):
+class GetUser(Resource):
     @jwt_required
     def get(self):
-        return {
-            'answer': 42
-        }
+        data = UserModel.find_by_email(get_jwt_identity())
+        if data:
+            return UserModel.to_json(data)
+        return {'message': 'coult not find your data'}, 404
+
+
+class AllUsers(Resource):
+    @jwt_required
+    def get(self):
+        return UserModel.return_all()
+
+    @jwt_required
+    def delete(self):
+        return UserModel.delete_all()

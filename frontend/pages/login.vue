@@ -196,8 +196,11 @@ export default Vue.extend({
               this.$toasted.global.success({
                 message: 'logged in'
               })
+              console.log(token)
               if (!this.redirect_uri) {
+                console.log('set token')
                 this.$store.commit('auth/setToken', token)
+                console.log('go to account')
                 this.$router.push({
                   path: '/account'
                 })
