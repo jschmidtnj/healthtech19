@@ -11,6 +11,10 @@ pandas = "*"
 flask = "*"
 seaborn = "*"
 flask-wtf = "*"
+flask-restful = "*"
+flask-sqlalchemy = "*"
+flask-jwt-extended = "*"
+passlib = "*"
 
 [requires]
 python_version = "3.7"

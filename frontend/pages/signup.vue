@@ -149,8 +149,7 @@ export default Vue.extend({
             .then(res => {
               if (res.status === 200) {
                 if (res.data) {
-                  let message =
-                    'finished signing up. please check email for confirmation'
+                  let message = 'finished signing up.'
                   if (res.data.message) {
                     message = res.data.message
                   }
