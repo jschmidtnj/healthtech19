@@ -14,6 +14,7 @@ class UserModel(db.Model):
     dob = db.Column(db.String(15), nullable=False)
     dod = db.Column(db.String(15), nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    # medications = db.Column(db.Array(50), nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
