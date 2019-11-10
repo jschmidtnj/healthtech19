@@ -6,12 +6,12 @@
         v-for="(name, index) in $store.state.auth.user.heatmap"
         :key="`${index}-${name}`"
         :name="name"
-        src="~/static/orange.png"
+        :src="require(`~/static/${getSrc(name, index)}`)"
         class="heatspot"
         :style="getStyle(name)"
       ></b-img>
     </div>
-    <b-form add-class="mt-4" @submit="addToHeatmap">
+    <b-form class="mt-4 mb-4" @submit="addToHeatmap">
       <b-form-group
         id="add-heatmap-group"
         label="Add joint pains:"
@@ -38,10 +38,24 @@
 
 <script lang="ts">
 import Vue from 'vue'
+const validLocations = [
+  'right elbow',
+  'left elbow',
+  'elbow',
+  'right wrist',
+  'left wrist',
+  'wrist',
+  'neck',
+  'right knee',
+  'left knee',
+  'knee'
+]
 // @ts-ignore
 const seo = JSON.parse(process.env.seoconfig)
 export default Vue.extend({
   name: 'Heatmap',
+  // @ts-ignore
+  layout: 'secure',
   // @ts-ignore
   head() {
     const title = 'About'
@@ -74,11 +88,17 @@ export default Vue.extend({
     return {
       form: {
         location: ''
-      }
+      },
+      interval: null
     }
   },
   mounted() {
-    this.updateUserData()
+    this.interval = setInterval(() => {
+      this.updateUserData()
+    }, 1000)
+  },
+  beforeDestroy() {
+    this.interval.clear()
   },
   methods: {
     updateUserData() {
@@ -92,9 +112,15 @@ export default Vue.extend({
           console.error(err)
         })
     },
-    getSrc(name) {
-      console.log(name)
-      return 'orange.png'
+    getSrc(name, index) {
+      if (validLocations.indexOf(name) < 0)
+        return 'transparent.png'
+      const num_elem = this.$store.state.auth.user.heatmap.filter(x => x === name).length
+      if (num_elem <= 2)
+        return 'yellow.png'
+      if (num_elem <= 4)
+        return 'orange.png'
+      return 'red.png'
     },
     getStyle(name) {
       if (name === 'right elbow' || name === 'elbow')
@@ -162,6 +188,8 @@ export default Vue.extend({
 .main-container {
   position: relative;
   margin-top: 2rem;
+  display: inline-block;
+  margin-bottom: 2rem;
 }
 .heatmap {
   max-height: 30rem;

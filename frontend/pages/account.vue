@@ -31,17 +31,16 @@
       </b-list-group>
       <b-form class="mt-4 mb-4" @submit="addToMedications">
         <b-form-group
-          id="add-heatmap-group"
-          label="Add joint pains:"
-          label-for="add-heatmap"
-          description="Add to heatmap"
+          id="add-medication-group"
+          label="Add medication:"
+          label-for="add-medication"
+          description="Add to medications"
         >
           <b-form-input
-            id="add-heatmap"
+            id="add-medication"
             v-model="form.medication"
             type="text"
-            placeholder="Enter heatmap"
-            aria-describedby="emailfeedback"
+            placeholder="Enter medication"
           ></b-form-input>
         </b-form-group>
         <b-button
@@ -53,7 +52,7 @@
         >
       </b-form>
     </b-card-text>
-    <b-button class="mt-4" variant="primary" @click="logout">Logout</b-button>
+    <!--b-button class="mt-4" variant="primary" @click="logout">Logout</b-button-->
   </b-card>
 </template>
 

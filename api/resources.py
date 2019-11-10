@@ -176,6 +176,7 @@ class Medications(Resource):
         user = UserModel.find_by_email(get_jwt_identity())
         if not user:
             return {'message': 'User not found'}, 404
+        data = user_medication_parser.parse_args()
         print("medication: " + data['medication'])
         user.medications.append(data['medication'])
         user.save_to_db()
