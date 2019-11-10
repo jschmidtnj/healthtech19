@@ -1,3 +1,7 @@
+# alexa skill env
+skill_env.zip
+skill_env/
+
 # Logs
 logs
 *.log

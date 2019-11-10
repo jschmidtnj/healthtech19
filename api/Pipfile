@@ -16,6 +16,8 @@ flask-sqlalchemy = "*"
 flask-jwt-extended = "*"
 passlib = "*"
 flask-cors = "*"
+pillow = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.7"
