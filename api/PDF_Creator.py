@@ -4,7 +4,7 @@ from Update_Body import *
 from generategraphs import *
 import os
 
-def export(name="Marco Polimeni", medications=[], ):
+def export(name="Marco Polimeni", medications=[]):
 	pdf = FPDF(orientation="P", unit="mm", format="letter")
 
 	pdf.add_page()
