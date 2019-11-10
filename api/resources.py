@@ -133,7 +133,7 @@ class GeneratePDF(Resource):
     def get(self):
         data = UserModel.find_by_email(get_jwt_identity())
         if data:
-            return {"pdf":pc.extract("{} {}".format(data.first_name, data.last_name), [])}
+            return {"pdf":export("{} {}".format(data.first_name, data.last_name), [])}
         return {'message': 'could not find your data'}, 404
 
 class Heatmap(Resource):
