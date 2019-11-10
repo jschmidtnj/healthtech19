@@ -1,7 +1,10 @@
 # pip install fpdf
 from fpdf import FPDF
+from Update_Body import *
+from generategraphs import *
+import os
 
-def export(name="Marco Polimeni", medications=[]):
+def export(name="Marco Polimeni", medications=[], ):
 	pdf = FPDF(orientation="P", unit="mm", format="letter")
 
 	pdf.add_page()
@@ -9,8 +12,16 @@ def export(name="Marco Polimeni", medications=[]):
 	pdf.set_font("Arial", "B", size=20)
 	pdf.cell(w=0, h=5, txt="Report for %s" % name, align="C")
 	pdf.set_font("Arial", size=12)
-	pdf.image("corn.jpg", 10, 50, 75, 75)
-	pdf.image("corn.jpg", 100, 50, 95, 200)
+
+	# Line Graph
+	lineplot()
+	pdf.image("output.png", 10, 50, 75, 75)
+	os.remove("output.png")
+
+	# Body Map
+	update()
+	pdf.image("humanOut.png", 100, 50, 95, 200)
+	os.remove("humanOut.png")
 
 	pdf.add_page()
 
