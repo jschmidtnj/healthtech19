@@ -1,6 +1,5 @@
 <template>
   <b-card title="Account Page">
-    <p></p>
     <b-card-text>
       <b-list-group>
         <b-list-group-item>
@@ -30,6 +29,29 @@
           }}
         </b-list-group-item>
       </b-list-group>
+      <b-form @submit="addToMedications">
+        <b-form-group
+          id="add-heatmap-group"
+          label="Add joint pains:"
+          label-for="add-heatmap"
+          description="Add to heatmap"
+        >
+          <b-form-input
+            id="add-heatmap"
+            v-model="form.heatmap"
+            type="text"
+            placeholder="Enter heatmap"
+            aria-describedby="emailfeedback"
+          ></b-form-input>
+        </b-form-group>
+        <b-button
+          variant="primary"
+          type="submit"
+          class="mt-4"
+          :disabled="form.medication.length === 0"
+          >Submit</b-button
+        >
+      </b-form>
     </b-card-text>
     <b-button variant="primary" @click="logout">Logout</b-button>
   </b-card>
@@ -74,17 +96,40 @@ export default Vue.extend({
     }
   },
   mounted() {
-    /* eslint-disable */
-    this.$store
-      .dispatch('auth/getUser')
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.error(err)
-      })
+    this.updateUserData()
   },
   methods: {
+    updateUserData() {
+      /* eslint-disable */
+      this.$store
+        .dispatch('auth/getUser')
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
+    addToMedications() {
+      this.$axios
+        .put('/medications', {
+          medication: this.form.medication
+        })
+        .then(res => {
+          if (res.status === 200) {
+            this.updateUserData()
+          }
+        })
+        .catch(err => {
+          let message = `got error: ${err}`
+          if (err.response && err.response.data) {
+            message = err.response.data.message
+          }
+          this.$toasted.global.error({
+            message: message
+          })
+        })
+    },
     logout(evt) {
       evt.preventDefault()
       this.$store.commit('auth/logout')

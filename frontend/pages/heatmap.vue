@@ -1,7 +1,30 @@
 <template>
   <b-container>
-    <b-jumbotron class="mt-4"></b-jumbotron>
-    <b-img src="~/static/human.png"></b-img>
+    <b-row class="text-center">
+      <b-img class="heatmap" src="~/static/human.png"></b-img>
+    </b-row>
+    <b-form @submit="addToHeatmap">
+      <b-form-group
+        id="add-heatmap-group"
+        label="Add joint pains:"
+        label-for="add-heatmap"
+        description="Add to heatmap"
+      >
+        <b-form-input
+          id="add-heatmap"
+          v-model="form.location"
+          type="text"
+          placeholder="Enter heatmap"
+        ></b-form-input>
+      </b-form-group>
+      <b-button
+        variant="primary"
+        type="submit"
+        class="mt-4"
+        :disabled="form.location.length === 0"
+        >Submit</b-button
+      >
+    </b-form>
   </b-container>
 </template>
 
@@ -38,8 +61,56 @@ export default Vue.extend({
         { hid: 'description', name: 'description', content: description }
       ]
     }
+  },
+  data() {
+    return {
+      form: {
+        location: ''
+      }
+    }
+  },
+  mounted() {
+    this.updateUserData()
+  },
+  methods: {
+    updateUserData() {
+      /* eslint-disable */
+      this.$store
+        .dispatch('auth/getUser')
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
+    addToHeatmap() {
+      this.$axios
+        .post('/heatmap', {
+          location: this.form.location
+        })
+        .then(res => {
+          if (res.status === 200) {
+            this.updateUserData()
+          }
+        })
+        .catch(err => {
+          let message = `got error: ${err}`
+          if (err.response && err.response.data) {
+            message = err.response.data.message
+          }
+          this.$toasted.global.error({
+            message: message
+          })
+        })
+    }
   }
 })
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.heatmap {
+  max-height: 30rem;
+  margin-top: 2rem;
+}
+</style>

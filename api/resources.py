@@ -15,6 +15,12 @@ alexa_heatmap_parser.add_argument('location', help = 'Location is required', req
 alexa_heatmap_parser.add_argument('email', help = 'Email is required', required = True)
 alexa_heatmap_parser.add_argument('password', help = 'Password is required', required = True)
 
+user_heatmap_parser = reqparse.RequestParser()
+user_heatmap_parser.add_argument('location', help = 'Location is required', required = True)
+
+user_medication_parser = reqparse.RequestParser()
+user_medication_parser.add_argument('medication', help = 'Medication is required', required = True)
+
 registration_parser = reqparse.RequestParser()
 registration_parser.add_argument('email', help = 'Email is required', required = True)
 registration_parser.add_argument('password', help = 'Password is required', required = True)
@@ -137,6 +143,7 @@ class GeneratePDF(Resource):
         return {'message': 'could not find your data'}, 404
 
 class Heatmap(Resource):
+    # this put is from alexa
     def put(self):
         data = alexa_heatmap_parser.parse_args()
         user = UserModel.find_by_email(data['email'])
@@ -150,3 +157,25 @@ class Heatmap(Resource):
         user.heatmap.append(data['location'])
         user.save_to_db()
         return {'message': 'added to heatmap'}
+    # this post is from a user
+    @jwt_required
+    def post(self):
+        user = UserModel.find_by_email(get_jwt_identity())
+        if not user:
+            return {'message': 'User not found'}, 404
+        data = user_heatmap_parser.parse_args()
+        print("location: " + data['location'])
+        user.heatmap.append(data['location'])
+        user.save_to_db()
+        return {'message': 'added to heatmap'}
+
+class Medications(Resource):
+    @jwt_required
+    def put(self):
+        user = UserModel.find_by_email(get_jwt_identity())
+        if not user:
+            return {'message': 'User not found'}, 404
+        print("medication: " + data['medication'])
+        user.medications.append(data['medication'])
+        user.save_to_db()
+        return {'message': 'added to medications'}
