@@ -2,6 +2,8 @@
 
 healthtech hackathon 2019
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/e63ad847-06e6-486b-a425-0e47e29dc8f7/deploy-status)](https://app.netlify.com/sites/healthhack19/deploys)
+
 ## notes
 
 - manage the ongoing care of cancer survivors from follow-up care to long-term side-effects. try to make the transition to normal life as easy as possible
