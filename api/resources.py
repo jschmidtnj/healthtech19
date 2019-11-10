@@ -136,7 +136,7 @@ class GeneratePDF(Resource):
             return {"pdf":pc.extract("{} {}".format(data.first_name, data.last_name), [])}
         return {'message': 'could not find your data'}, 404
 
-class AddToHeatmap(Resource):
+class Heatmap(Resource):
     def put(self):
         data = alexa_heatmap_parser.parse_args()
         user = UserModel.find_by_email(data['email'])
@@ -145,7 +145,7 @@ class AddToHeatmap(Resource):
         if data['password'] != ALEXA_SECRET_KEY:
             return {'message': 'password invalid'}, 400
         if data['location'] not in VALID_JOINTS:
-            print(data['location'])
+            print("invalid location: " + data['location'])
             # return {'message': 'location invalid'}, 400
         user.heatmap.append(data['location'])
         user.save_to_db()

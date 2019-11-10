@@ -42,7 +42,7 @@ api.add_resource(resources.TokenRefresh, '/token/refresh')
 api.add_resource(resources.AllUsers, '/users')
 api.add_resource(resources.GetUser, '/user')
 api.add_resource(resources.GeneratePDF, '/generate')
-api.add_resource(resources.AddToHeatmap, '/addToHeatmap')
+api.add_resource(resources.Heatmap, '/heatmap')
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App

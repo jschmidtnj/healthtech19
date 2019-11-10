@@ -6,12 +6,14 @@
 # This sample is built using the handler classes approach in skill builder.
 import logging
 import ask_sdk_core.utils as ask_utils
+from ask_sdk_core.utils import get_slot_value
 
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model import Response
+import requests
 import config
 
 logger = logging.getLogger(__name__)
@@ -28,7 +30,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Welcome, you can record joint pain by saying log, followed by the joint that is bothering you."
+        speak_output = "Welcome to re joint! How can I help?"
 
         return (
             handler_input.response_builder
@@ -46,13 +48,18 @@ class LogJointPainIntentHandler(AbstractRequestHandler):
         return ask_utils.is_intent_name("LogJointPainIntent")(handler_input)
 
     def handle(self, handler_input):
+        location = get_slot_value(handler_input=handler_input, slot_name="location")
+        logger.info(location)
+        level = get_slot_value(handler_input=handler_input, slot_name="level")
+        logger.info(level)
         requests.put(config.API_URL + config.ADD_HEATMAP_ENDPOINT, data={
             'email': config.USER_EMAIL,
             'password': config.ALEXA_PASSWORD,
-            'location': handler_input
+            'location': location,
+            'level': level
         })
         # type: (HandlerInput) -> Response
-        speak_output = "Thank you. Your logs are saved."
+        speak_output = "Your record was saved. We hope you feel better!"
 
         return (
             handler_input.response_builder
@@ -71,7 +78,7 @@ class HelpIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "You can say log to me! How can I help?"
+        speak_output = "You can say record joint pain to me! How can I help?"
 
         return (
             handler_input.response_builder

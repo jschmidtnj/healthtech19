@@ -1,8 +1,37 @@
 <template>
   <b-card title="Account Page">
-    <p>user: {{ this.$store.state.auth.user }}</p>
-    <p>token: {{ this.$store.state.auth.token }}</p>
-    <b-btn @click="logout">Logout</b-btn>
+    <p></p>
+    <b-card-text>
+      <b-list-group>
+        <b-list-group-item>
+          Name: {{ this.$store.state.auth.user.first_name }},
+          {{ this.$store.state.auth.user.last_name }}
+        </b-list-group-item>
+        <b-list-group-item>
+          Date of Diagnosis: {{ this.$store.state.auth.user.dod }}
+        </b-list-group-item>
+        <b-list-group-item>
+          Gender: {{ this.$store.state.auth.user.gender }}
+        </b-list-group-item>
+        <b-list-group-item>
+          Medications:
+          {{
+            this.$store.state.auth.user.medications
+              ? this.$store.state.auth.user.medications.join(', ')
+              : ''
+          }}
+        </b-list-group-item>
+        <b-list-group-item>
+          Heat Map:
+          {{
+            this.$store.state.auth.user.heatmap
+              ? this.$store.state.auth.user.heatmap.join(', ')
+              : ''
+          }}
+        </b-list-group-item>
+      </b-list-group>
+    </b-card-text>
+    <b-button variant="primary" @click="logout">Logout</b-button>
   </b-card>
 </template>
 
@@ -43,6 +72,17 @@ export default Vue.extend({
         { hid: 'description', name: 'description', content: description }
       ]
     }
+  },
+  mounted() {
+    /* eslint-disable */
+    this.$store
+      .dispatch('auth/getUser')
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        console.error(err)
+      })
   },
   methods: {
     logout(evt) {
