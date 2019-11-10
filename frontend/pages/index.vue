@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <b-jumbotron header="Arthritis Help" class="mt-4" />
+    <b-jumbotron header="Re Joint" class="mt-4" />
   </b-container>
 </template>
 

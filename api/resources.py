@@ -3,13 +3,26 @@ from flask_restful import Resource, reqparse, inputs
 from models import UserModel, RevokedTokenModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from PDF_Creator import *
+from config import ALEXA_SECRET_KEY
+from config import VALID_JOINTS
 
 login_parser = reqparse.RequestParser()
 login_parser.add_argument('email', help = 'Email is required', required = True)
 login_parser.add_argument('password', help = 'Password is required', required = True)
 
+alexa_heatmap_parser = reqparse.RequestParser()
+alexa_heatmap_parser.add_argument('location', help = 'Location is required', required = True)
+alexa_heatmap_parser.add_argument('email', help = 'Email is required', required = True)
+alexa_heatmap_parser.add_argument('password', help = 'Password is required', required = True)
+
+user_heatmap_parser = reqparse.RequestParser()
+user_heatmap_parser.add_argument('location', help = 'Location is required', required = True)
+
+user_medication_parser = reqparse.RequestParser()
+user_medication_parser.add_argument('medication', help = 'Medication is required', required = True)
+
 registration_parser = reqparse.RequestParser()
-registration_parser.add_argument('email', help = 'Email is required', required = True, type=inputs.regex("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"))
+registration_parser.add_argument('email', help = 'Email is required', required = True)
 registration_parser.add_argument('password', help = 'Password is required', required = True)
 registration_parser.add_argument('first_name', help = 'First name is required', required = True)
 registration_parser.add_argument('last_name', help = 'Last name is required', required = True)
@@ -23,7 +36,7 @@ class UserRegistration(Resource):
         data = registration_parser.parse_args()
         
         if UserModel.find_by_email(data['email']):
-            return {'message': 'User {} already exists'.format(data['email'])}
+            return {'message': 'User {} already exists'.format(data['email'])}, 400
         
         new_user = UserModel(
             email = data['email'],
@@ -33,7 +46,9 @@ class UserRegistration(Resource):
             phone = data['phone'],
             gender = data['gender'],
             dob = data['dob'],
-            dod = data['dod']
+            dod = data['dod'],
+            medications = [],
+            heatmap = []
         )
         
         try:
@@ -45,7 +60,8 @@ class UserRegistration(Resource):
                 'access_token': access_token,
                 'refresh_token': refresh_token
                 }
-        except:
+        except Exception as e:
+            print(e)
             return {'message': 'Something went wrong'}, 500
 
 
@@ -123,5 +139,45 @@ class GeneratePDF(Resource):
     def get(self):
         data = UserModel.find_by_email(get_jwt_identity())
         if data:
-            return {"pdf":pc.extract("{} {}".format(data.first_name, data.last_name), [])}
+            #return {"pdf":export("{} {}".format(data.first_name, data.last_name), [])}
+            return {"pdf":export()}
         return {'message': 'could not find your data'}, 404
+
+class Heatmap(Resource):
+    # this put is from alexa
+    def put(self):
+        data = alexa_heatmap_parser.parse_args()
+        user = UserModel.find_by_email(data['email'])
+        if not user:
+            return {'message': 'User {} not found'.format(data['email'])}, 404
+        if data['password'] != ALEXA_SECRET_KEY:
+            return {'message': 'password invalid'}, 400
+        if data['location'] not in VALID_JOINTS:
+            print("invalid location: " + data['location'])
+            # return {'message': 'location invalid'}, 400
+        user.heatmap.append(data['location'])
+        user.save_to_db()
+        return {'message': 'added to heatmap'}
+    # this post is from a user
+    @jwt_required
+    def post(self):
+        user = UserModel.find_by_email(get_jwt_identity())
+        if not user:
+            return {'message': 'User not found'}, 404
+        data = user_heatmap_parser.parse_args()
+        print("location: " + data['location'])
+        user.heatmap.append(data['location'])
+        user.save_to_db()
+        return {'message': 'added to heatmap'}
+
+class Medications(Resource):
+    @jwt_required
+    def put(self):
+        user = UserModel.find_by_email(get_jwt_identity())
+        if not user:
+            return {'message': 'User not found'}, 404
+        data = user_medication_parser.parse_args()
+        print("medication: " + data['medication'])
+        user.medications.append(data['medication'])
+        user.save_to_db()
+        return {'message': 'added to medications'}

@@ -5,7 +5,7 @@
 
 /* variables */
 :root {
-  --font-family-main: 'Roboto', sans-serif;
+  --font-family-main: 'Raleway', Helvetica, sans-serif;
 }
 
 /* set fonts */
@@ -23,7 +23,9 @@
 .content {
   flex: 1;
 }
-
+.bg-info {
+    background:#F06286 !important;
+}
 /* get bullet points back */
 .markdown ul {
   list-style-type: disc !important;

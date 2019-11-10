@@ -1,10 +1,10 @@
 <template>
   <b-navbar toggleable="lg" type="dark" variant="info">
-    <b-navbar-brand href="/">Arthritis Support</b-navbar-brand>
+    <b-navbar-brand href="/">Rejoint</b-navbar-brand>
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item href="/about">About</b-nav-item>
+        <b-nav-item href="/heatmap">Heatmap</b-nav-item>
         <b-nav-item v-if="!loggedin" href="/signup">Signup</b-nav-item>
         <b-nav-item v-if="!loggedin" href="/login">Login</b-nav-item>
       </b-navbar-nav>
