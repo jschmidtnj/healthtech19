@@ -16,6 +16,8 @@ flask-sqlalchemy = "*"
 flask-jwt-extended = "*"
 passlib = "*"
 flask-cors = "*"
+fpdf = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"

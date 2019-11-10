@@ -2,7 +2,7 @@ import re
 from flask_restful import Resource, reqparse, inputs
 from models import UserModel, RevokedTokenModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
-import PDF_Creator.py as pc
+from PDF_Creator import *
 
 login_parser = reqparse.RequestParser()
 login_parser.add_argument('email', help = 'Email is required', required = True)
