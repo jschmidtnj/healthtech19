@@ -4,7 +4,8 @@
       <b-img class="heatmap" src="~/static/human.png"></b-img>
       <b-img
         v-for="(name, index) in $store.state.auth.user.heatmap"
-        :key="index"
+        :key="`${index}-${name}`"
+        :name="name"
         src="~/static/orange.png"
         class="heatspot"
         :style="getStyle(name)"
@@ -96,18 +97,40 @@ export default Vue.extend({
       return 'orange.png'
     },
     getStyle(name) {
-      let left = window.innerWidth / 2
-      console.log(left)
+      if (name === 'right elbow' || name === 'elbow')
+        return {
+          top: '8rem',
+          left: '0rem'
+        }
+      if (name === 'left elbow')
+        return {
+          top: '8rem',
+          left: '6.5rem'
+        }
+      if (name === 'right wrist' || name === 'wrist')
+        return {
+          top: '12.5rem',
+          left: '-1rem'
+        }
+      if (name === 'left wrist')
+        return {
+          top: '12.5rem',
+          left: '7.5rem'
+        }
+      if (name === 'neck')
+        return {
+          top: '2.35rem',
+          left: '3.5rem'
+        }
+      if (name === 'right knee' || name === 'knee')
+        return {
+          top: '19rem',
+          left: '2rem'
+        }
       if (name === 'left knee')
         return {
-          top: '10rem',
-          'text-align': 'center',
-          transform: 'translateX(50%)'
-        }
-      if (name === 'right knee')
-        return {
-          top: '60px',
-          left: '80px'
+          top: '19rem',
+          left: '4.5rem'
         }
     },
     addToHeatmap(evt) {
@@ -142,9 +165,9 @@ export default Vue.extend({
 }
 .heatmap {
   max-height: 30rem;
-  display: block;
-  margin:auto;
   position: relative;
+  left: 0;
+  top: 0;
 }
 .heatspot {
   height: 5rem;
