@@ -3,20 +3,20 @@
     <b-card-text>
       <b-list-group>
         <b-list-group-item>
-          Name: {{ this.$store.state.auth.user.first_name }},
-          {{ this.$store.state.auth.user.last_name }}
+          Name: {{ $store.state.auth.user.first_name }},
+          {{ $store.state.auth.user.last_name }}
         </b-list-group-item>
         <b-list-group-item>
-          Date of Diagnosis: {{ this.$store.state.auth.user.dod }}
+          Date of Diagnosis: {{ $store.state.auth.user.dod }}
         </b-list-group-item>
         <b-list-group-item>
-          Gender: {{ this.$store.state.auth.user.gender }}
+          Gender: {{ $store.state.auth.user.gender }}
         </b-list-group-item>
         <b-list-group-item>
           Medications:
           {{
-            this.$store.state.auth.user.medications
-              ? this.$store.state.auth.user.medications.join(', ')
+            $store.state.auth.user.medications
+              ? $store.state.auth.user.medications.join(', ')
               : ''
           }}
         </b-list-group-item>
@@ -29,7 +29,7 @@
           }}
         </b-list-group-item>
       </b-list-group>
-      <b-form @submit="addToMedications">
+      <b-form class="mt-4 mb-4" @submit="addToMedications">
         <b-form-group
           id="add-heatmap-group"
           label="Add joint pains:"
@@ -38,7 +38,7 @@
         >
           <b-form-input
             id="add-heatmap"
-            v-model="form.heatmap"
+            v-model="form.medication"
             type="text"
             placeholder="Enter heatmap"
             aria-describedby="emailfeedback"
@@ -47,13 +47,13 @@
         <b-button
           variant="primary"
           type="submit"
-          class="mt-4"
+          class="mt-2"
           :disabled="form.medication.length === 0"
           >Submit</b-button
         >
       </b-form>
     </b-card-text>
-    <b-button variant="primary" @click="logout">Logout</b-button>
+    <b-button class="mt-4" variant="primary" @click="logout">Logout</b-button>
   </b-card>
 </template>
 
@@ -95,6 +95,13 @@ export default Vue.extend({
       ]
     }
   },
+  data() {
+    return {
+      form: {
+        medication: ''
+      }
+    }
+  },
   mounted() {
     this.updateUserData()
   },
@@ -110,7 +117,8 @@ export default Vue.extend({
           console.error(err)
         })
     },
-    addToMedications() {
+    addToMedications(evt) {
+      evt.preventDefault()
       this.$axios
         .put('/medications', {
           medication: this.form.medication

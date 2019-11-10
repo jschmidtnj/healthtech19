@@ -1,9 +1,16 @@
 <template>
   <b-container>
-    <b-row class="text-center">
+    <div class="main-container">
       <b-img class="heatmap" src="~/static/human.png"></b-img>
-    </b-row>
-    <b-form @submit="addToHeatmap">
+      <b-img
+        v-for="(name, index) in $store.state.auth.user.heatmap"
+        :key="index"
+        src="~/static/orange.png"
+        class="heatspot"
+        :style="getStyle(name)"
+      ></b-img>
+    </div>
+    <b-form add-class="mt-4" @submit="addToHeatmap">
       <b-form-group
         id="add-heatmap-group"
         label="Add joint pains:"
@@ -84,7 +91,27 @@ export default Vue.extend({
           console.error(err)
         })
     },
-    addToHeatmap() {
+    getSrc(name) {
+      console.log(name)
+      return 'orange.png'
+    },
+    getStyle(name) {
+      let left = window.innerWidth / 2
+      console.log(left)
+      if (name === 'left knee')
+        return {
+          top: '10rem',
+          'text-align': 'center',
+          transform: 'translateX(50%)'
+        }
+      if (name === 'right knee')
+        return {
+          top: '60px',
+          left: '80px'
+        }
+    },
+    addToHeatmap(evt) {
+      evt.preventDefault()
       this.$axios
         .post('/heatmap', {
           location: this.form.location
@@ -109,8 +136,18 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+.main-container {
+  position: relative;
+  margin-top: 2rem;
+}
 .heatmap {
   max-height: 30rem;
-  margin-top: 2rem;
+  display: block;
+  margin:auto;
+  position: relative;
+}
+.heatspot {
+  height: 5rem;
+  position: absolute;
 }
 </style>
