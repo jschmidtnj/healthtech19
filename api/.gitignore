@@ -1,2 +1,5 @@
 # ignore db files
 *.db
+
+# ignore config file
+config.py

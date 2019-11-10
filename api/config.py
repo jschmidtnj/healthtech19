@@ -1,1 +1,1 @@
-URI="postgresql+psycopg2://api:tupKoFGscp24Jph5@/DATABASE?host=/cloudsql/healthhack19:us-east4:maindb"
+URI="postgresql+psycopg2://api:tupKoFGscp24Jph5@35.245.212.165/postgres"

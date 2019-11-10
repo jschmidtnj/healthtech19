@@ -16,6 +16,7 @@ flask-sqlalchemy = "*"
 flask-jwt-extended = "*"
 passlib = "*"
 flask-cors = "*"
+fpdf = "*"
 pillow = "*"
 psycopg2 = "*"
 

@@ -2,6 +2,7 @@ import re
 from flask_restful import Resource, reqparse, inputs
 from models import UserModel, RevokedTokenModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
+from PDF_Creator import *
 
 login_parser = reqparse.RequestParser()
 login_parser.add_argument('email', help = 'Email is required', required = True)
@@ -105,7 +106,7 @@ class GetUser(Resource):
         data = UserModel.find_by_email(get_jwt_identity())
         if data:
             return UserModel.to_json(data)
-        return {'message': 'coult not find your data'}, 404
+        return {'message': 'could not find your data'}, 404
 
 
 class AllUsers(Resource):
@@ -116,3 +117,11 @@ class AllUsers(Resource):
     @jwt_required
     def delete(self):
         return UserModel.delete_all()
+
+class GeneratePDF(Resource):
+    @jwt_required
+    def get(self):
+        data = UserModel.find_by_email(get_jwt_identity())
+        if data:
+            return {"pdf":pc.extract("{} {}".format(data.first_name, data.last_name), [])}
+        return {'message': 'could not find your data'}, 404
