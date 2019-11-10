@@ -1,5 +1,7 @@
 from main import db
 from passlib.hash import pbkdf2_sha256 as sha256
+from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.dialects.postgresql import ARRAY
 
 
 class UserModel(db.Model):
@@ -14,7 +16,8 @@ class UserModel(db.Model):
     dob = db.Column(db.String(15), nullable=False)
     dod = db.Column(db.String(15), nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    # medications = db.Column(db.Array(50), nullable=False)
+    medications = db.Column(MutableList.as_mutable(db.ARRAY(db.String(120))), nullable=False)
+    heatmap = db.Column(MutableList.as_mutable(db.ARRAY(db.String(120))), nullable=False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -33,7 +36,9 @@ class UserModel(db.Model):
             'gender': x.gender,
             'dob': x.dob,
             'dod': x.dod,
-            'password': x.password
+            'password': x.password,
+            'medications': x.medications,
+            'heatmap': x.heatmap
         }
 
     @classmethod
