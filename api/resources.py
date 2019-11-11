@@ -169,6 +169,16 @@ class Heatmap(Resource):
         user.heatmap.append(data['location'])
         user.save_to_db()
         return {'message': 'added to heatmap'}
+    @jwt_required
+    def delete(self):
+        user = UserModel.find_by_email(get_jwt_identity())
+        if not user:
+            return {'message': 'User not found'}, 404
+        data = user_heatmap_parser.parse_args()
+        print("location: " + data['location'])
+        user.heatmap.remove(data['location'])
+        user.save_to_db()
+        return {'message': 'removed heatmap'}
 
 class Medications(Resource):
     @jwt_required
@@ -181,3 +191,14 @@ class Medications(Resource):
         user.medications.append(data['medication'])
         user.save_to_db()
         return {'message': 'added to medications'}
+
+    @jwt_required
+    def delete(self):
+        user = UserModel.find_by_email(get_jwt_identity())
+        if not user:
+            return {'message': 'User not found'}, 404
+        data = user_medication_parser.parse_args()
+        print("medication: " + data['medication'])
+        user.medications.remove(data['medication'])
+        user.save_to_db()
+        return {'message': 'removed medication'}
